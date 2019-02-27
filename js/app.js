@@ -74,7 +74,7 @@ class UI {
       this.itemID++;
       this.itemList.push(expense);
       this.addExpense(expense);
-      // show balance
+      this.showBalance();
 
     }
   }
@@ -103,8 +103,44 @@ class UI {
   }
   // total expense
   totalExpense(){
-let total = 400;
+let total = 0;
+if(this.itemList.length>0){
+total = this.itemList.reduce(function(acc,curr){
+console.log(`total is ${acc} and the current value ${curr.amount}`);
+acc += curr.amount;
+  return acc;
+},0);
+}
+this.expenseAmount.textContent = total;
 return total;
+  }
+  // edit
+  editExpense(element){
+let id = parseInt(element.dataset.id);
+let parent = element.parentElement.parentElement.parentElement;
+this.expenseList.removeChild(parent);
+let expense = this.itemList.filter(function(item){
+  return item.id === id ;
+})
+this.expenseInput.value = expense[0].title;
+this.amountInput.value = expense[0].amount;
+let tempList  = this.itemList.filter(function(item){
+  return item.id !==id;
+})
+this.itemList = tempList;
+this.showBalance();
+
+  }
+  // delete
+  deleteExpense(element){
+    let id = parseInt(element.dataset.id);
+    let parent = element.parentElement.parentElement.parentElement;
+    this.expenseList.removeChild(parent);
+    let tempList  = this.itemList.filter(function(item){
+      return item.id !==id;
+    })
+    this.itemList = tempList;
+    this.showBalance();
   }
 }
 
@@ -126,6 +162,11 @@ expenseForm.addEventListener('submit',function(event){
 })
 // form submit
 expenseList.addEventListener('click',function(event){
+  if(event.target.parentElement.classList.contains('edit-icon')){
+    ui.editExpense(event.target.parentElement);
+  }else if(event.target.parentElement.classList.contains('delete-icon')){
+    ui.deleteExpense(event.target.parentElement);
+  }
   
 })
 }
